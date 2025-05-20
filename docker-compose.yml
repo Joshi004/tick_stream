@@ -1,0 +1,44 @@
+version: '3.8'
+
+networks:
+  tick-stream-network:
+    driver: bridge
+
+services:
+  api:
+    build: .
+    container_name: tick-stream-api
+    ports:
+      - "8001:8000"  # Using 8001 to avoid conflicts with existing services
+    depends_on:
+      - timescaledb
+    environment:
+      - POSTGRES_SERVER=timescaledb
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=tick_stream_db
+      - POSTGRES_PORT=5432
+    networks:
+      - tick-stream-network
+    volumes:
+      - ./app:/app/app
+    restart: unless-stopped
+
+  timescaledb:
+    image: timescale/timescaledb:latest-pg13
+    container_name: tick-stream-timescaledb
+    ports:
+      - "5433:5432"  # Using 5433 to avoid conflicts with existing services
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=tick_stream_db
+    volumes:
+      - timescaledb-data:/var/lib/postgresql/data
+    networks:
+      - tick-stream-network
+    restart: unless-stopped
+    command: postgres -c shared_preload_libraries=timescaledb
+
+volumes:
+  timescaledb-data: 
