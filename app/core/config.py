@@ -12,6 +12,10 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8
     PROJECT_NAME: str = "Tick Stream"
     
+    # KITE CONNECT API
+    KITE_API_KEY: Optional[str] = None
+    KITE_ACCESS_TOKEN: Optional[str] = None
+    
     # POSTGRES
     POSTGRES_SERVER: str = "timescaledb"
     POSTGRES_USER: str = "postgres"
